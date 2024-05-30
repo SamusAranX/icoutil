@@ -1,0 +1,17 @@
+[package]
+name = "icoutil"
+version = "1.0.3"
+repository = "https://github.com/SamusAranX/icoutil"
+edition = "2021"
+rust-version = "1.77.2" # TODO: update to 1.78.0 once the github runners are updated
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "4.5.4", features = ["derive"] }
+const_format = "0.2.32"
+ico = "0.3.0"
+image = { version = "0.25.1" }
+
+[build-dependencies]
+chrono = "0.4.38"
