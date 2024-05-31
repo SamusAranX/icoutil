@@ -1,6 +1,6 @@
 [package]
 name = "icoutil"
-version = "1.0.0"
+version = "1.0.1"
 repository = "https://github.com/SamusAranX/icoutil"
 edition = "2021"
 rust-version = "1.77.2" # TODO: update to 1.78.0 once the github runners are updated

@@ -5,6 +5,7 @@ use std::io::ErrorKind;
 use std::path::{Path, PathBuf};
 use clap::Parser;
 use const_format::formatcp;
+use ico::IconDirEntry;
 
 const GIT_HASH: &str = env!("GIT_HASH");
 const GIT_BRANCH: &str = env!("GIT_BRANCH");
@@ -62,7 +63,7 @@ fn create_ico<P: AsRef<Path>>(input_dir: P, output_file: P) -> Result<(), String
 			continue
 		}
 
-		icon_dir.add_entry(ico::IconDirEntry::encode(&image).unwrap());
+		icon_dir.add_entry(ico::IconDirEntry::encode_as_png(&image).unwrap());
 		println!("Added {size_png}");
 	}
 
@@ -78,6 +79,18 @@ fn create_ico<P: AsRef<Path>>(input_dir: P, output_file: P) -> Result<(), String
 	Ok(())
 }
 
+fn construct_entry_name(entry: &IconDirEntry) -> String {
+	let mut file_name = format!("{}", entry.width());
+	if entry.width() != entry.height() || !ICON_SIZES.contains(&entry.width()) {
+		file_name.push_str(format!("x{}", entry.height()).as_str())
+	}
+	if entry.bits_per_pixel() != 32 {
+		file_name.push_str(format!("@{}", entry.bits_per_pixel()).as_str());
+	}
+	file_name.push_str(".png");
+	file_name
+}
+
 fn extract_pngs<P: AsRef<Path>>(input_file: P, output_dir: P) -> Result<(), String> {
 	let file = std::fs::File::open(input_file).expect("Can't open input .ico file");
 	let icon_dir = ico::IconDir::read(file).expect("Input file is invalid");
@@ -87,15 +100,7 @@ fn extract_pngs<P: AsRef<Path>>(input_file: P, output_dir: P) -> Result<(), Stri
 	for entry in icon_dir.entries() {
 		let image = entry.decode().expect("Can't decode image");
 
-		let mut file_name = format!("{}", entry.width());
-		if entry.width() != entry.height() || !ICON_SIZES.contains(&entry.width()) {
-			file_name.push_str(format!("x{}", entry.height()).as_str())
-		}
-		if entry.bits_per_pixel() != 32 {
-			file_name.push_str(format!("@{}", entry.bits_per_pixel()).as_str());
-		}
-		file_name.push_str(".png");
-
+		let file_name = construct_entry_name(entry);
 		let png_file = match std::fs::File::create(output_dir.as_ref().join(&file_name)) {
 			Ok(result) => result,
 			Err(error) => match error.kind() {
@@ -142,7 +147,6 @@ fn main() -> Result<(), String> {
 		} else if output_path.is_dir() {
 			return Err("The output folder already exists. Specify --overwrite to overwrite it.".parse().unwrap());
 		}
-
 	}
 
 	match args.convert {
