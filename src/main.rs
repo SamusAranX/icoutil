@@ -3,9 +3,13 @@
 use std::fs::create_dir_all;
 use std::io::ErrorKind;
 use std::path::{Path, PathBuf};
+
 use clap::Parser;
 use const_format::formatcp;
-use ico::IconDirEntry;
+
+use crate::utils::construct_entry_name;
+
+mod utils;
 
 const GIT_HASH: &str = env!("GIT_HASH");
 const GIT_BRANCH: &str = env!("GIT_BRANCH");
@@ -77,18 +81,6 @@ fn create_ico<P: AsRef<Path>>(input_dir: P, output_file: P) -> Result<(), String
 	println!("Created {} with {} images.", output_file.as_ref().file_name().unwrap().to_str().unwrap(), icon_dir.entries().len());
 
 	Ok(())
-}
-
-fn construct_entry_name(entry: &IconDirEntry) -> String {
-	let mut file_name = format!("{}", entry.width());
-	if entry.width() != entry.height() || !ICON_SIZES.contains(&entry.width()) {
-		file_name.push_str(format!("x{}", entry.height()).as_str())
-	}
-	if entry.bits_per_pixel() != 32 {
-		file_name.push_str(format!("@{}", entry.bits_per_pixel()).as_str());
-	}
-	file_name.push_str(".png");
-	file_name
 }
 
 fn extract_pngs<P: AsRef<Path>>(input_file: P, output_dir: P) -> Result<(), String> {
