@@ -111,7 +111,6 @@ fn extract_pngs<P: AsRef<Path>>(input_file: P, output_dir: P) -> Result<(), Stri
 
 fn main() -> Result<(), String> {
 	let args = Args::parse();
-	println!("args: {:?}", args);
 
 	// make sure args.output is usable
 	let mut temp_buf = PathBuf::from(args.input.parent().expect("Can't get input file parent"));
@@ -131,7 +130,7 @@ fn main() -> Result<(), String> {
 	}
 
 	let output_path = args.output.unwrap_or(temp_buf);
-	println!("output: {:?}", output_path);
+	println!("output: {}", output_path.display());
 
 	if output_path.exists() && !args.overwrite {
 		if output_path.is_file() {
