@@ -10,7 +10,7 @@ rust-version = "1.77.2" # TODO: update to 1.78.0 once the github runners are upd
 [dependencies]
 clap = { version = "4.5.7", features = ["derive"] }
 const_format = "0.2.32"
-ico = "0.3.0"
+ico = "0.4.0"
 image = { version = "0.25.1" }
 
 [build-dependencies]
